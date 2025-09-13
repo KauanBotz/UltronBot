@@ -1,17 +1,25 @@
 // webhook-server.js (arquivo separado para o site)
 const express = require('express');
 const cors = require('cors');
-const { MercadoPagoConfig, Payment } = require('mercadopago');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configuração MercadoPago
 const MERCADOPAGO_ACCESS_TOKEN = 'APP_USR-805402732901035-091218-7fab4d1fd121082a5b5f2137aae457e2-2040478904';
-const client = new MercadoPagoConfig({
-  accessToken: MERCADOPAGO_ACCESS_TOKEN,
-});
-const payment = new Payment(client);
+
+// Configuração compatível
+let mercadopago;
+let payment;
+
+try {
+  mercadopago = require('mercadopago');
+  mercadopago.configure({
+    access_token: MERCADOPAGO_ACCESS_TOKEN
+  });
+  payment = mercadopago.payment;
+} catch (error) {
+  console.log('Usando configuração alternativa do MercadoPago');
+}
 
 // Middleware
 app.use(cors());
